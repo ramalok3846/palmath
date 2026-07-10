@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaLMath 관리자 콘솔 | 데이터베이스 뷰어</title>
+    <meta name="description" content="PaLMath 회원 데이터베이스 및 건의사항을 조회할 수 있는 관리자 화면입니다.">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            justify-content: flex-start;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #ffffff;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: 16px;
+            margin-bottom: 2.5rem;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-text) 40%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            font-size: 0.95rem;
+            color: var(--color-text);
+        }
+
+        .user-name-highlight {
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border-glow);
+            color: var(--color-text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-logout:hover {
+            border-color: var(--color-error);
+            color: var(--color-error);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        main {
+            width: 100%;
+            max-width: 1200px;
+            z-index: 5;
+        }
+
+        .admin-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        /* Tabs layout */
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-glow);
+            padding-bottom: 0.5rem;
+        }
+
+        .admin-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-text-muted);
+            padding: 0.6rem 1.5rem;
+            font-family: var(--font-outfit);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border-bottom: 2px solid transparent;
+        }
+
+        .admin-tab-btn:hover {
+            color: var(--color-text);
+        }
+
+        .admin-tab-btn.active {
+            color: var(--color-text);
+            border-bottom-color: var(--border-glow-active);
+        }
+
+        .admin-pane {
+            display: none;
+        }
+
+        .admin-pane.active {
+            display: block;
+        }
+
+        .user-counter {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            background: rgba(138, 75, 235, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-glow);
+        }
+
+        .user-counter-number {
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        .btn-refresh {
+            background: var(--primary-grad);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-outfit);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 10px rgba(138, 75, 235, 0.2);
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(138, 75, 235, 0.35);
+        }
+
+        /* Database Table Container */
+        .table-container {
+            background: #ffffff;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            margin-bottom: 4rem;
+        }
+
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .db-table th {
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--color-text);
+            font-weight: 600;
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border-glow);
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .db-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(128, 90, 213, 0.08);
+            color: var(--color-text);
+            transition: var(--transition-smooth);
+        }
+
+        .db-table tbody tr:hover td {
+            background: rgba(124, 58, 237, 0.06);
+            color: var(--color-text);
+        }
+
+        .db-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--color-text-muted);
+            font-style: italic;
+        }
+
+        /* Loading spinner */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: hsl(270, 95%, 70%);
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="floating-particle particle-1"></div>
+    <div class="floating-particle particle-2"></div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-logo">PaLMath Admin</div>
+        <div class="user-nav">
+            <div class="user-info">
+                <span class="user-name-highlight">관리자</span> 계정
+            </div>
+            <button class="btn-logout" onclick="logout()">로그아웃</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Administrative Panel Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab-btn active" id="tabUsers" onclick="switchPane('users')">회원 데이터베이스</button>
+            <button class="admin-tab-btn" id="tabSuggestions" onclick="switchPane('suggestions')">사용자 건의사항</button>
+        </div>
+
+        <!-- PANE 1: Users Database -->
+        <div id="paneUsers" class="admin-pane active">
+            <div class="admin-header-actions">
+                <div>
+                    <h1 class="admin-title">회원 데이터베이스 조회</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="user-counter">총 가입 인원: <span class="user-counter-number" id="userCount">0</span>명</span>
+                    <button class="btn-refresh" onclick="fetchUsers()">새로고침</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">번호</th>
+                            <th>아이디</th>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th style="width: 220px;">가입 일시</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr class="empty-row">
+                            <td colspan="5">
+                                <span class="loader"></span>데이터를 불러오는 중입니다...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PANE 2: Suggestions Board -->
+        <div id="paneSuggestions" class="admin-pane">
+            <div class="admin-header-actions">
+                <div>
+                    <h1 class="admin-title">사용자 건의사항 조회</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="user-counter">건의사항 개수: <span class="user-counter-number" id="suggCount">0</span>개</span>
+                    <button class="btn-refresh" onclick="fetchSuggestions()">새로고침</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">번호</th>
+                            <th style="width: 200px;">작성자</th>
+                            <th>건의 내용</th>
+                            <th style="width: 220px;">작성 일시</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suggTableBody">
+                        <tr class="empty-row">
+                            <td colspan="4">
+                                <span class="loader"></span>데이터를 불러오는 중입니다...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check session
+        const sessionUser = JSON.parse(localStorage.getItem('palUser'));
+        if (!sessionUser || !sessionUser.isAdmin) {
+            window.location.href = '/login';
+        }
+
+        // Tab Switching
+        function switchPane(pane) {
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
+
+            if (pane === 'users') {
+                document.getElementById('tabUsers').classList.add('active');
+                document.getElementById('paneUsers').classList.add('active');
+                fetchUsers();
+            } else {
+                document.getElementById('tabSuggestions').classList.add('active');
+                document.getElementById('paneSuggestions').classList.add('active');
+                fetchSuggestions();
+            }
+        }
+
+        // Fetch users from API
+        async function fetchUsers() {
+            const tableBody = document.getElementById('usersTableBody');
+            const countDisplay = document.getElementById('userCount');
+            
+            tableBody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="5">
+                        <span class="loader"></span>데이터를 불러오는 중입니다...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await fetch('/api/users');
+                if (!response.ok) {
+                    throw new Error('데이터 로딩에 실패했습니다.');
+                }
+                const users = await response.json();
+                countDisplay.textContent = users.length;
+                
+                if (users.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr class="empty-row">
+                            <td colspan="5">등록된 회원이 없습니다.</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                users.forEach((user, index) => {
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="font-weight: 600; color: hsl(270, 90%, 80%);">${escapeHtml(user.username)}</td>
+                            <td>${escapeHtml(user.name)}</td>
+                            <td>${escapeHtml(user.email)}</td>
+                            <td style="color: var(--color-text-muted); font-size: 0.85rem;">${escapeHtml(user.createdAt)}</td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            } catch (err) {
+                tableBody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="5" style="color: var(--color-error);">오류가 발생했습니다: ${escapeHtml(err.message)}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fetch suggestions from API
+        async function fetchSuggestions() {
+            const tableBody = document.getElementById('suggTableBody');
+            const countDisplay = document.getElementById('suggCount');
+            
+            tableBody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="4">
+                        <span class="loader"></span>데이터를 불러오는 중입니다...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await fetch('/api/suggestions');
+                if (!response.ok) {
+                    throw new Error('건의사항 로딩에 실패했습니다.');
+                }
+                const suggs = await response.json();
+                countDisplay.textContent = suggs.length;
+                
+                if (suggs.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr class="empty-row">
+                            <td colspan="4">등록된 건의사항이 없습니다.</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                suggs.forEach((s, index) => {
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="font-weight: 600; color: hsl(270, 90%, 80%);">
+                                ${escapeHtml(s.name)} <span style="font-size:0.8rem; font-weight:normal; opacity:0.6;">(${escapeHtml(s.username)})</span>
+                            </td>
+                            <td style="white-space: pre-wrap; line-height: 1.4; font-size: 0.9rem;">${escapeHtml(s.content)}</td>
+                            <td style="color: var(--color-text-muted); font-size: 0.85rem;">${escapeHtml(s.createdAt)}</td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            } catch (err) {
+                tableBody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="4" style="color: var(--color-error);">오류가 발생했습니다: ${escapeHtml(err.message)}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Log out
+        function logout() {
+            localStorage.removeItem('palUser');
+            window.location.href = '/login';
+        }
+
+        // Initial fetch
+        fetchUsers();
+    </script>
+</body>
+</html>
