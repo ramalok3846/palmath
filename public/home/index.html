@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 개인 맞춤형 수학 대시보드 | PaLMath</title>
+    <meta name="description" content="인공지능 PaLMath의 통합 학습 대시보드입니다. 개별화 맞춤 교육과정과 연계된 학습 여정을 추적하세요.">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            justify-content: flex-start;
+            padding: 0;
+        }
+
+        header {
+            width: 100%;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            font-weight: 500;
+        }
+
+        .user-name-highlight {
+            color: var(--color-text);
+            font-weight: 700;
+            border-bottom: 2px solid hsl(265, 80%, 55%);
+            padding-bottom: 2px;
+            margin-right: 0.2rem;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: var(--color-error);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--color-error);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-header-action {
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid var(--border-glow);
+            color: var(--color-text);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-header-action:hover {
+            background: rgba(124, 58, 237, 0.15);
+            border-color: var(--border-glow-active);
+        }
+
+        /* Main Section */
+        main {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            z-index: 10;
+        }
+
+        .dashboard-intro {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-text) 30%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto;
+            line-height: 1.6;
+        }
+
+        /* Revision Selection bar */
+        .revision-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: #ffffff;
+            border: 1px solid var(--border-glow);
+            border-radius: 50px;
+            padding: 0.4rem 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .revision-selector {
+            display: flex;
+            gap: 0.3rem;
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 40px;
+            padding: 0.2rem;
+        }
+
+        .revision-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-text-muted);
+            padding: 0.4rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            transition: var(--transition-smooth);
+        }
+
+        .revision-btn.active {
+            background: var(--primary-grad);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(138, 75, 235, 0.4);
+        }
+
+        .link-schedule {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: var(--transition-smooth);
+        }
+
+        .link-schedule:hover {
+            color: var(--color-text);
+        }
+
+        /* School Level Tabs */
+        .level-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .tab-btn {
+            background: #ffffff;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            color: var(--color-text-muted);
+            font-family: var(--font-outfit);
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 0.8rem 2.2rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn:hover {
+            color: var(--color-text);
+            border-color: var(--border-glow-active);
+            background: rgba(124, 58, 237, 0.04);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-grad);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 
+                0 8px 25px rgba(138, 75, 235, 0.25);
+        }
+
+        /* Curriculum content panel grids */
+        .curriculum-content {
+            display: none;
+            animation: tabFadeIn 0.5s ease forwards;
+        }
+
+        .curriculum-content.active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .grade-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .grade-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .grade-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grade-card:hover {
+            border-color: var(--border-glow-active);
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.06),
+                0 0 20px rgba(168, 85, 247, 0.08);
+        }
+
+        .grade-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 0.8rem;
+        }
+
+        .grade-desc {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .btn-card-action {
+            width: 100%;
+            padding: 0.9rem;
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid var(--border-glow);
+            color: var(--color-text);
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: var(--font-outfit);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-align: center;
+        }
+
+        .btn-card-action:hover {
+            background: var(--primary-grad);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(138, 75, 235, 0.4);
+        }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 10, 30, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 150;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06), 0 0 30px rgba(124, 58, 237, 0.05);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--color-text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close-btn:hover {
+            color: var(--color-text);
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            margin-bottom: 1.8rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Chapter lists inside Modal */
+        .chapter-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .chapter-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chapter-grid::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 4px;
+        }
+
+        .chapter-item {
+            background: #ffffff;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            color: var(--color-text);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .chapter-item:hover {
+            border-color: var(--border-glow-active);
+            background: rgba(124, 58, 237, 0.06);
+            color: var(--color-text);
+            transform: translateX(4px);
+        }
+
+        .chapter-arrow {
+            color: #7c3aed;
+            font-weight: 700;
+        }
+
+        /* Confirm action buttons */
+        .btn-flex-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .btn-flex-row button {
+            flex: 1;
+        }
+
+        /* Welcome overlay styles */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 5, 20, 0.9);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fade-out-welcome 0.5s ease 2.7s forwards;
+        }
+
+        .welcome-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+            filter: blur(50px);
+            animation: pulse-welcome 2.5s infinite alternate ease-in-out;
+        }
+
+        .welcome-content {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: var(--color-text-muted);
+        }
+
+        @keyframes pulse-welcome {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            100% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        @keyframes fade-out-welcome {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Particle effect in welcome screen */
+        .math-particle {
+            position: absolute;
+            color: rgba(168, 85, 247, 0.25);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            user-select: none;
+            pointer-events: none;
+            animation: float-up-particle 4s linear infinite;
+        }
+
+        @keyframes float-up-particle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #ffffff;
+            border: 1px solid var(--border-glow-active);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: var(--color-text);
+            font-size: 0.9rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            z-index: 200;
+            transform: translateY(150%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Suggestion textarea */
+        .feedback-textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(15, 10, 25, 0.4);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: #fff;
+            padding: 0.9rem;
+            font-family: var(--font-outfit);
+            font-size: 0.95rem;
+            resize: none;
+            margin-bottom: 1.2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: var(--border-glow-active);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+        }
+
+        /* Test Config style options */
+        .config-select-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .config-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .config-select {
+            width: 100%;
+            background: rgba(15, 10, 25, 0.45);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: #fff;
+            padding: 0.8rem 1rem;
+            font-family: var(--font-outfit);
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+
+        .config-select:focus {
+            outline: none;
+            border-color: var(--border-glow-active);
+        }
+
+        @keyframes pulse-glow-purple {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.4)); }
+            100% { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.8)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="floating-particle particle-1"></div>
+    <div class="floating-particle particle-2"></div>
+
+    <!-- Welcome Animation Overlay -->
+    <div id="welcomeOverlay" class="welcome-overlay" style="display: none;">
+        <div class="welcome-glow"></div>
+        <div class="welcome-content">
+            <h2 class="welcome-title" id="welcomeTitle">환영합니다!</h2>
+            <p class="welcome-text">인공지능 PaLMath와 함께 수학을 탐험해 보세요.</p>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-logo">PaLMath</div>
+        <div class="user-nav">
+            <div class="streak-badge" id="streakBadge" onclick="window.location.href='/streak/'">🔥 0일째</div>
+            <div class="user-info">
+                <span id="userNameDisplay" class="user-name-highlight">학생</span>님 환영합니다
+            </div>
+            <button class="btn-header-action" onclick="openSuggestionModal()">건의사항 남기기</button>
+            <button class="btn-logout" onclick="logout()">로그아웃</button>
+        </div>
+    </header>
+
+    <!-- Main Section -->
+    <main>
+        <div class="dashboard-intro">
+            <h1 class="dashboard-title">개인 맞춤형 수학 코스</h1>
+            <p class="dashboard-subtitle">초등학교부터 고등학교까지, 본인의 진도에 맞춰 수학 학습을 시작하세요.</p>
+            
+            <!-- Revision Selection & Link to Schedule -->
+            <div class="revision-bar">
+                <div class="revision-selector">
+                    <button class="revision-btn active" id="rev2022" onclick="setRevision('2022')">2022 개정</button>
+                    <button class="revision-btn" id="rev2015" onclick="setRevision('2015')">2015 개정</button>
+                </div>
+                <a href="/curriculum-info" class="link-schedule">
+                    교육과정 적용시기 안내 🔍
+                </a>
+            </div>
+        </div>
+
+        <!-- Rago Mascot Info Box (Hidden: show only on streak page) -->
+        <div class="mascot-box" id="ragoMascotBox" style="display: none !important;">
+            <div class="mascot-image-wrapper">
+                <img src="/images/rago_angry.png" alt="Rago" id="ragoMascotImg" class="mascot-img">
+            </div>
+            <div class="mascot-bubble" id="ragoMascotText">
+                라고 로딩 중...
+            </div>
+        </div>
+
+        <!-- Main Navigation Tabs -->
+        <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid rgba(138, 75, 235, 0.15); margin-bottom: 2rem;">
+            <button id="navStudyHome" class="nav-tab" onclick="switchNavTab('study')" style="padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 700; color: var(--color-primary); background: transparent; border: none; border-bottom: 3px solid var(--color-primary); cursor: pointer; transition: all 0.2s ease;">📖 학습 홈</button>
+            <button id="navMyExams" class="nav-tab" onclick="switchNavTab('exams')" style="padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 700; color: var(--color-text-muted); background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s ease;">📝 나의 시험지</button>
+        </div>
+
+        <div id="studyHomeContainer">
+            <!-- School Level Tabs -->
+            <div class="level-tabs">
+                <button class="tab-btn active" onclick="switchLevel('elementary')">초등학교</button>
+                <button class="tab-btn" onclick="switchLevel('middle')">중학교</button>
+                <button class="tab-btn" onclick="switchLevel('high')">고등학교</button>
+            </div>
+
+            <!-- Elementary Grid -->
+            <div id="elementaryContent" class="curriculum-content active">
+                <div class="grade-grid" id="elementaryGrid"></div>
+            </div>
+
+            <!-- Middle Grid -->
+            <div id="middleContent" class="curriculum-content">
+                <div class="grade-grid" id="middleGrid"></div>
+            </div>
+
+            <!-- High Grid -->
+            <div id="highContent" class="curriculum-content">
+                <div class="grade-grid" id="highGrid"></div>
+            </div>
+        </div>
+
+        <!-- My Exams Container -->
+        <div id="myExamsContainer" style="display:none; margin-top: 1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size:1.5rem; font-weight:800; color:#3b1e70;">나의 시험지 보관함</h2>
+                    <p style="color:var(--color-text-muted); font-size:0.9rem; margin-top:0.25rem;">직접 설계한 맞춤형 시험지 및 학습 후 생성된 단원/복습 시험지 목록입니다.</p>
+                </div>
+                <button class="btn-primary" style="margin-top:0; background:linear-gradient(135deg, hsl(295, 80%, 55%), hsl(265, 80%, 55%)); box-shadow:0 4px 15px rgba(186, 75, 235, 0.3);" onclick="openCreateExamModal()">➕ 새 시험지 만들기</button>
+            </div>
+            
+            <div id="myExamsList">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Chapter Selection Modal -->
+    <div id="chapterModal" class="modal-overlay">
+        <div class="modal-container">
+            <button class="modal-close-btn" onclick="closeModal('chapterModal')">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">중학 수학 1-1</h3>
+                <p class="modal-subtitle">학습할 수학 단원을 선택하세요.</p>
+            </div>
+            
+            <div class="chapter-grid" id="chapterList">
+                <!-- Chapters will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog Modal -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 480px; text-align: center;">
+            <button class="modal-close-btn" onclick="closeModal('confirmModal')">×</button>
+            <div class="modal-header" style="margin-bottom: 1.5rem;">
+                <h3 class="modal-title" id="confirmTitle">학습을 시작하시겠습니까?</h3>
+                <p class="modal-subtitle" id="confirmSubtitle">해당 단원의 학습을 즉시 진행합니다.</p>
+            </div>
+            <div class="btn-flex-row">
+                <button class="btn-primary" onclick="proceedToStudy()" style="margin-top:0;">📖 개념 학습 및 복습 시작</button>
+                <button class="btn-primary" onclick="openTestConfig()" style="margin-top:0; background: linear-gradient(135deg, hsl(295, 80%, 55%), hsl(265, 80%, 55%)); box-shadow: 0 4px 15px rgba(186, 75, 235, 0.35);">📝 실력 평가 시험지 출력</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Generation Config Modal -->
+    <div id="testConfigModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 460px;">
+            <button class="modal-close-btn" onclick="closeModal('testConfigModal')">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">수학 진단 시험 설정</h3>
+                <p class="modal-subtitle" id="testConfigSubtitle">단원 실력 점검 설정</p>
+            </div>
+
+            <div class="config-select-group">
+                <label class="config-label">문제 유형 구성</label>
+                <select class="config-select" id="questionType">
+                    <option value="mixed">객관식 + 주관식 혼합 구성 (권장)</option>
+                    <option value="choice">객관식 문항만 구성</option>
+                    <option value="short">주관식 문항만 구성</option>
+                </select>
+            </div>
+
+            <div class="config-select-group">
+                <label class="config-label">문제 수 선택 <span class="badge-ready-soon" style="background:#ef4444; color:#fff; font-size:0.7rem; padding:0.1rem 0.4rem; border-radius:4px; margin-left:0.5rem; font-weight:bold; vertical-align:middle; display:inline-block;">준비중</span></label>
+                <select class="config-select" disabled style="cursor: not-allowed; opacity: 0.7;">
+                    <option>20문항 (고정)</option>
+                </select>
+            </div>
+
+            <div class="config-select-group">
+                <label class="config-label">제한시간 설정 (선택)</label>
+                <select class="config-select" id="testTimeLimit">
+                    <option value="none">제한시간 없음 (기본)</option>
+                    <option value="5">5분</option>
+                    <option value="10">10분</option>
+                    <option value="20">20분</option>
+                    <option value="30">30분</option>
+                    <option value="50">50분</option>
+                </select>
+            </div>
+
+            <div class="btn-flex-row">
+                <button class="btn-primary" onclick="generateTest('online')" style="margin-top:0;">즉석에서 시험 보기</button>
+                <button class="btn-primary" onclick="generateTest('print')" style="margin-top:0; background: linear-gradient(135deg, hsl(295, 80%, 55%), hsl(265, 80%, 55%));">PDF 다운 및 인쇄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggestion Modal -->
+    <div id="suggestionModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 500px;">
+            <button class="modal-close-btn" onclick="closeModal('suggestionModal')">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">관리자 건의사항 등록</h3>
+                <p class="modal-subtitle">PaLMath 서비스에 필요한 건의사항을 남겨주시면 관리자가 실시간 검토합니다.</p>
+            </div>
+            <textarea id="feedbackText" class="feedback-textarea" placeholder="건의 및 요청 내용을 이곳에 작성해 주세요..."></textarea>
+            <button class="btn-primary" onclick="submitFeedback()" style="margin-top:0;">건의사항 제출</button>
+        </div>
+    </div>
+
+    <!-- Streak Calendar Modal -->
+    <div id="streakCalendarModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 440px;">
+            <button class="modal-close-btn" onclick="closeModal('streakCalendarModal')">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">🔥 연속 학습 기록 (달력)</h3>
+                <p class="modal-subtitle">꾸준한 수학 탐험이 실력이 됩니다.</p>
+            </div>
+            <div class="calendar-container" id="calendarWrapper">
+                <!-- Calendar layout goes here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Custom Exam Modal -->
+    <div id="createExamModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 480px;">
+            <button class="modal-close-btn" onclick="closeModal('createExamModal')">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">📝 나만의 수학 시험지 만들기</h3>
+                <p class="modal-subtitle">평가하고 싶은 범위와 난이도를 설정하세요.</p>
+            </div>
+            
+            <form id="customExamForm" onsubmit="createCustomExam(event)">
+                <div class="config-select-group" style="margin-bottom:1rem;">
+                    <label class="config-label">시험지 제목</label>
+                    <input type="text" id="examTitleInput" class="config-select" style="width:100%; border:2px solid #e2e8f0; border-radius:10px; padding:0.6rem 1rem;" placeholder="예: 1단원 개념 평가" required autocomplete="off">
+                </div>
+                
+                <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">학교급</label>
+                        <select class="config-select" id="examLevelSelect" onchange="updateExamModalGrades()">
+                            <option value="elementary">초등학교</option>
+                            <option value="middle">중학교</option>
+                            <option value="high">고등학교</option>
+                        </select>
+                    </div>
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">학년</label>
+                        <select class="config-select" id="examGradeSelect" onchange="updateExamModalChapters()">
+                            <!-- Grades dynamically populated -->
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">학기</label>
+                        <select class="config-select" id="examSemesterSelect" onchange="updateExamModalChapters()">
+                            <option value="1">1학기</option>
+                            <option value="2">2학기</option>
+                        </select>
+                    </div>
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">교육과정</label>
+                        <select class="config-select" id="examRevisionSelect" onchange="updateExamModalChapters()">
+                            <option value="2022">2022 개정</option>
+                            <option value="2015">2015 개정</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="config-select-group" style="margin-bottom:1rem;">
+                    <label class="config-label">시험 단원</label>
+                    <select class="config-select" id="examChapterSelect" style="width:100%;">
+                        <!-- Chapters dynamically populated -->
+                    </select>
+                </div>
+
+                <div style="display:flex; gap:1rem; margin-bottom:1.5rem;">
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">난이도</label>
+                        <select class="config-select" id="examDifficultySelect">
+                            <option value="기본">기본 (Basic)</option>
+                            <option value="심화">심화 (Advanced)</option>
+                        </select>
+                    </div>
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">문항 수</label>
+                        <select class="config-select" id="examQCountSelect">
+                            <option value="10">10문항</option>
+                            <option value="15">15문항</option>
+                            <option value="20">20문항</option>
+                            <option value="30">30문항</option>
+                        </select>
+                    </div>
+                    <div class="config-select-group" style="flex:1;">
+                        <label class="config-label">제한시간</label>
+                        <select class="config-select" id="examLimitSelect">
+                            <option value="none">제한 없음</option>
+                            <option value="10">10분</option>
+                            <option value="20">20분</option>
+                            <option value="30">30분</option>
+                            <option value="45">45분</option>
+                            <option value="60">60분</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width:100%; margin-top:0; padding:0.9rem;">✨ 시험지 만들기 및 등록</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Spaced Repetition Due Reminder Modal -->
+    <div id="repetitionReminderModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 460px; text-align: center;">
+            <button class="modal-close-btn" onclick="closeModal('repetitionReminderModal')">×</button>
+            <div class="modal-header" style="margin-bottom: 1.2rem;">
+                <span style="font-size: 3rem; display: inline-block; margin-bottom: 0.8rem; animation: pulse-glow-purple 1.5s infinite alternate ease-in-out;">⏱️</span>
+                <h3 class="modal-title">오늘의 복습 알림</h3>
+                <p class="modal-subtitle" id="reminderMessage">복습할 단원이 있습니다!</p>
+            </div>
+            <p style="font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 1.8rem;">
+                에빙하우스 망각 곡선에 따르면 지금 복습할 때 기억이 가장 오래 보존됩니다.
+            </p>
+            <div class="btn-flex-row" style="justify-content: center; gap: 1rem;">
+                <button class="btn-primary" onclick="goToReminderStudy()" style="margin-top: 0; width: 150px;">복습하러 가기</button>
+                <button class="btn-secondary" onclick="closeModal('repetitionReminderModal')" style="margin-top: 0; width: 150px;">나중에 하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="toast">
+        <span class="toast-icon" id="toastIcon">✨</span>
+        <span id="toastMessage">메시지 내용</span>
+    </div>
+
+    <script>
+        // Check network connection
+        function checkNetworkConnection() {
+            let overlay = document.getElementById('networkOfflineOverlay');
+            if (!overlay) {
+                const div = document.createElement('div');
+                div.id = 'networkOfflineOverlay';
+                div.className = 'network-overlay';
+                div.innerHTML = `
+                    <div class="network-card">
+                        <span class="network-icon">⚠️</span>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; color:#fff;">네트워크 연결 필요</h2>
+                        <p style="font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+                            안정적인 학습 데이터 동기화를 위해 인터넷 연결을 확인해 주십시오. 연결이 복구되면 자동으로 잠금이 해제됩니다.
+                        </p>
+                        <button class="btn-primary" style="margin-top:0;" onclick="window.location.reload()">다시 시도</button>
+                    </div>
+                `;
+                document.body.appendChild(div);
+                overlay = div;
+            }
+            
+            const isOnline = navigator.onLine;
+            if (!isOnline) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        window.addEventListener('online', checkNetworkConnection);
+        window.addEventListener('offline', checkNetworkConnection);
+        window.addEventListener('load', checkNetworkConnection);
+        checkNetworkConnection();
+
+        // Check user session
+        const sessionUser = JSON.parse(localStorage.getItem('palUser'));
+        if (!sessionUser) {
+            window.location.href = '/login';
+        } else {
+            document.getElementById('userNameDisplay').textContent = sessionUser.name;
+        }
+
+        const FIREBASE_URL = "https://pal-inte-db-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+        // Local state
+        let userStreak = { currentStreak: 0, lastActiveDate: null, history: {} };
+        let dueReminders = [];
+
+        // Mock Curriculum Datasets
+        const MIDDLE_SCHOOL_2022 = {
+            1: {
+                1: ['1. 소인수분해', '2. 정수와 유리수', '3. 일차방정식', '4. 좌표평면과 그래프'],
+                2: ['1. 기본 도형', '2. 평면도형', '3. 입체도형', '4. 통계 (대푯값 포함)']
+            },
+            2: {
+                1: ['1. 유리수와 순환소수', '2. 식의 계산', '3. 일차부등식', '4. 연립일차방정식', '5. 일차함수와 그래프'],
+                2: ['1. 도형의 성질', '2. 도형의 닮음과 피타고라스 정리', '3. 확률']
+            },
+            3: {
+                1: ['1. 제곱근과 실수', '2. 다항식의 곱셈และ 인수분해', '3. 이차방정식', '4. 이차함수와 그 그래프 (최대·최소 포함)'],
+                2: ['1. 삼각비', '2. 원의 성질', '3. 통계 (상자그림·산점도)']
+            }
+        };
+
+        const MIDDLE_SCHOOL_2015 = {
+            1: {
+                1: ['1. 소인수분해', '2. 정수와 유리수', '3. 문자와 식', '4. 좌표평면과 그래프'],
+                2: ['1. 기본 도형', '2. 평면도형', '3. 입체도형', '4. 자료의 정리와 해석']
+            },
+            2: {
+                1: ['1. 유리수와 순환소수', '2. 식의 계산', '3. 일차부등식', '4. 연립일차방정식', '5. 일차함수와 그래프'],
+                2: ['1. 삼각형의 성질', '2. 사각형의 성질', '3. 도형의 닮음과 피타고라스 정리', '4. 확률']
+            },
+            3: {
+                1: ['1. 제곱근과 실수', '2. 다항식의 곱셈과 인수분해', '3. 이차방정식', '4. 이차함수와 그 그래프'],
+                2: ['1. 삼각비', '2. 원의 성질', '3. 통계']
+            }
+        };
+
+        const HIGH_SCHOOL_2022 = {
+            1: {
+                1: ['[공통수학1] 1. 다항식', '[공통수학1] 2. 방정식과 부등식', '[공통수학1] 3. 경우의 수', '[공통수학1] 4. 행렬'],
+                2: ['[공통수학2] 1. 도형의 방정식', '[공통수학2] 2. 집합과 명제', '[공통수학2] 3. 함수와 그래프']
+            },
+            2: {
+                1: ['[대수] 1. 지수와 로그', '[대수] 2. 지수함수와 로그함수', '[대수] 3. 삼각함수', '[대수] 4. 수열', '[확률과 통계] 1. 경우의 수와 순열', '[확률과 통계] 2. 확률', '[기하] 1. 이차곡선', '[기하] 2. 평면벡터'],
+                2: ['[미적분Ⅰ] 1. 함수의 극한과 연속', '[미적분Ⅰ] 2. 다항함수의 미분법', '[미적분Ⅰ] 3. 다항함수의 적분법', '[확률과 통계] 3. 통계', '[기하] 3. 공간도형과 공간좌표']
+            },
+            3: {
+                1: ['[미적분Ⅱ] 1. 수열의 극한', '[미적분Ⅱ] 2. 여러 가지 미분법', '[인공지능 수학] 1. 데이터와 행렬', '[경제수학] 1. 수와 생활경제'],
+                2: ['[미적분Ⅱ] 3. 여러 가지 적분법', '[인공지능 수학] 2. 최적화와 의사결정', '[경제수학] 2. 수열과 금융']
+            }
+        };
+
+        const HIGH_SCHOOL_2015 = {
+            1: {
+                1: ['[수학] 1. 다항식', '[수학] 2. 방정식과 부등식'],
+                2: ['[수학] 3. 도형의 방정식', '[수학] 4. 집합과 명제', '[수학] 5. 함수와 그래프', '[수학] 6. 순열과 조합']
+            },
+            2: {
+                1: ['[수학Ⅰ] 1. 지수함수와 로그함수', '[수학Ⅰ] 2. 삼각함수', '[수학Ⅰ] 3. 수열', '[확률과 통계] 1. 순열과 조합', '[확률과 통계] 2. 확률'],
+                2: ['[수학Ⅱ] 1. 함수의 극한과 연속', '[수학Ⅱ] 2. 미분법', '[수학Ⅱ] 3. 적분법', '[기하] 1. 이차곡선', '[기하] 2. 평면벡터']
+            },
+            3: {
+                1: ['[미적분] 1. 수열의 극한', '[미적분] 2. 미분법', '[기하] 3. 공간도형과 공간좌표'],
+                2: ['[미적분] 3. 적분법', '[실용수학] 1. 식과 생활', '[실용수학] 2. 규칙과 기하']
+            }
+        };
+
+        const MATH_CURRICULUM = {
+            elementary: {
+                name: '초등 수학',
+                grades: 6,
+                desc: '초등학교 {grade}학년 기초 연산과 도형 감각을 익히는 학습입니다.',
+                chapters: {
+                    1: {
+                        1: ['1. 9까지의 수', '2. 여러 가지 모양', '3. 덧셈과 뺄셈', '4. 비교하기', '5. 50까지의 수'],
+                        2: ['1. 100까지의 수', '2. 덧셈과 뺄셈(1)', '3. 여러 가지 모양', '4. 덧셈과 뺄셈(2)', '5. 시계 보기와 규칙 찾기', '6. 덧셈과 뺄셈(3)']
+                    },
+                    2: {
+                        1: ['1. 세 자리 수', '2. 여러 가지 도형', '3. 덧셈과 뺄셈', '4. 길이 재기', '5. 분류하기', '6. 곱셈'],
+                        2: ['1. 네 자리 수', '2. 곱셈구구', '3. 길이 재기', '4. 시각과 시간', '5. 표와 그래프', '6. 규칙 찾기']
+                    },
+                    3: {
+                        1: ['1. 덧셈과 뺄셈', '2. 평면도형', '3. 나눗셈', '4. 곱셈', '5. 시간과 길이', '6. 분수와 소수'],
+                        2: ['1. 곱셈', '2. 나눗셈', '3. 원', '4. 분수', '5. 들이와 무게', '6. 자료의 정리']
+                    },
+                    4: {
+                        1: ['1. 큰 수', '2. 각도', '3. 곱셈과 나눗셈', '4. 평면도형의 이동', '5. 막대그래프', '6. 규칙 찾기'],
+                        2: ['1. 분수의 덧셈과 뺄셈', '2. 삼각형', '3. 소수의 덧셈과 뺄셈', '4. 사각형', '5. 꺾은선그래프', '6. 다각형']
+                    },
+                    5: {
+                        1: ['1. 자연수의 혼합 계산', '2. 약수와 배수', '3. 규칙과 대응', '4. 약분과 통분', '5. 분수의 덧셈과 뺄셈', '6. 다각형의 둘레와 넓이'],
+                        2: ['1. 수의 범위와 어림하기', '2. 분수의 곱셈', '3. 합동과 대칭', '4. 소수의 곱셈', '5. 직육면체', '6. 평균과 가능성']
+                    },
+                    6: {
+                        1: ['1. 분수의 나눗셈', '2. 각기둥과 각뿔', '3. 소수의 나눗셈', '4. 비와 비율', '5. 여러 가지 그래프', '6. 직육면체의 부피와 겉넓이'],
+                        2: ['1. 분수의 나눗셈', '2. 소수의 나눗셈', '3. 공간과 입체', '4. 비례식과 비례배분', '5. 원의 넓이', '6. 원기둥, 원뿔, 구']
+                    }
+                }
+            },
+            middle: {
+                name: '중등 수학',
+                grades: 3,
+                desc: '중학교 {grade}학년 정수와 유리수, 방정식과 기하 기초를 완성합니다.',
+                chapters: MIDDLE_SCHOOL_2022
+            },
+            high: {
+                name: '고등 수학',
+                grades: 3,
+                desc: '고등학교 {grade}학년 대수, 기하, 미적분 및 실력 완성을 다룹니다.',
+                data: HIGH_SCHOOL_2022
+            }
+        };
+
+        let currentRevision = '2022';
+        let selectedState = {
+            level: '',
+            grade: 0,
+            semester: 0,
+            chapter: ''
+        };
+
+        // Welcome animation triggered on loginSuccess
+        if (sessionUser && sessionUser.loginSuccess) {
+            const welcomeOverlay = document.getElementById('welcomeOverlay');
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            
+            welcomeTitle.textContent = `${sessionUser.name}님, 환영합니다!`;
+            welcomeOverlay.style.display = 'flex';
+            
+            spawnMathParticles();
+            
+            sessionUser.loginSuccess = false;
+            localStorage.setItem('palUser', JSON.stringify(sessionUser));
+            
+            setTimeout(() => {
+                welcomeOverlay.style.display = 'none';
+                checkDueRepetitions(); // Check due repetitions after overlay closes
+            }, 3000);
+        } else {
+            // Check immediately on load if welcome animation is not shown
+            window.addEventListener('DOMContentLoaded', () => {
+                setTimeout(checkDueRepetitions, 300);
+            });
+        }
+
+        // Change Curriculum Revision
+        function setRevision(revision) {
+            currentRevision = revision;
+            document.getElementById('rev2022').classList.toggle('active', revision === '2022');
+            document.getElementById('rev2015').classList.toggle('active', revision === '2015');
+
+            // Apply middle and high school curriculums
+            MATH_CURRICULUM.middle.chapters = revision === '2022' ? MIDDLE_SCHOOL_2022 : MIDDLE_SCHOOL_2015;
+            MATH_CURRICULUM.high.data = revision === '2022' ? HIGH_SCHOOL_2022 : HIGH_SCHOOL_2015;
+            
+            // Re-render
+            renderCurriculums();
+            showToast(`수학 교육과정이 [${revision} 개정]으로 변경되었습니다.`);
+        }
+
+        // Render Grids dynamically
+        function renderCurriculums() {
+            Object.keys(MATH_CURRICULUM).forEach(level => {
+                const levelData = MATH_CURRICULUM[level];
+                const grid = document.getElementById(`${level}Grid`);
+                grid.innerHTML = '';
+
+                for (let grade = 1; grade <= levelData.grades; grade++) {
+                    const card = document.createElement('div');
+                    card.className = 'grade-card';
+                    
+                    const desc = level === 'elementary' ? `초등학교 ${grade}학년 기초 수학 능력을 완성하는 표준 교육과정 코스입니다.`
+                                : level === 'middle' ? `중학교 ${grade}학년 개념과 연산, 응용 심화 학습을 지원하는 정규 수학 코스입니다.`
+                                : `고등학교 ${grade}학년 대입 연계 공통 및 선택 과목의 개념 설계 코스입니다.`;
+                    
+                    card.innerHTML = `
+                        <h2 class="grade-title">${levelData.name} ${grade}학년</h2>
+                        <p class="grade-desc">${desc}</p>
+                        <div style="display:flex; gap:0.50rem;">
+                            <button class="btn-card-action" onclick="openChapters('${level}', ${grade}, 1)">1학기 학습</button>
+                            <button class="btn-card-action" onclick="openChapters('${level}', ${grade}, 2)">2학기 학습</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        // Switch school level tabs
+        function switchLevel(level) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.curriculum-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(`${level}Content`).classList.add('active');
+        }
+
+        // Modal triggers
+        function openChapters(level, grade, semester) {
+            selectedState.level = level;
+            selectedState.grade = grade;
+            selectedState.semester = semester;
+
+            const modalTitle = document.getElementById('modalTitle');
+            const chapterList = document.getElementById('chapterList');
+            const levelName = MATH_CURRICULUM[level].name;
+
+            modalTitle.textContent = `${levelName} ${grade}학년 ${semester}학기`;
+            chapterList.innerHTML = '';
+
+            let chapters = [];
+            if (level === 'high') {
+                chapters = MATH_CURRICULUM.high.data[grade][semester] || [];
+            } else {
+                chapters = MATH_CURRICULUM[level].chapters[grade][semester] || [];
+            }
+
+            chapters.forEach(ch => {
+                const item = document.createElement('div');
+                item.className = 'chapter-item';
+                item.innerHTML = `
+                    <span>${ch}</span>
+                    <span class="chapter-arrow">→</span>
+                `;
+                item.onclick = () => confirmStudy(ch);
+                chapterList.appendChild(item);
+            });
+
+            document.getElementById('chapterModal').classList.add('active');
+        }
+
+        function confirmStudy(chapterName) {
+            selectedState.chapter = chapterName;
+            closeModal('chapterModal');
+
+            document.getElementById('confirmTitle').textContent = `[${selectedState.chapter}] 학습을 시작하시겠습니까?`;
+            document.getElementById('confirmSubtitle').textContent = 
+                `진도: ${MATH_CURRICULUM[selectedState.level].name} ${selectedState.grade}학년 ${selectedState.semester}학기 (${currentRevision} 개정)`;
+
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function proceedToStudy() {
+            closeModal('confirmModal');
+            const queryParams = new URLSearchParams({
+                level: selectedState.level,
+                grade: selectedState.grade,
+                semester: selectedState.semester,
+                chapter: selectedState.chapter,
+                revision: currentRevision
+            });
+            window.location.href = `/study?${queryParams.toString()}`;
+        }
+
+        // Open Test Config Modal
+        function openTestConfig() {
+            closeModal('confirmModal');
+            const levelName = MATH_CURRICULUM[selectedState.level].name;
+            document.getElementById('testConfigSubtitle').textContent = 
+                `[${levelName} ${selectedState.grade}학년 ${selectedState.semester}학기 - ${selectedState.chapter}]`;
+            
+            document.getElementById('testConfigModal').classList.add('active');
+        }
+
+        // Redirect to test generation page
+        function generateTest(mode) {
+            closeModal('testConfigModal');
+            const qType = document.getElementById('questionType').value;
+            const limit = document.getElementById('testTimeLimit').value;
+            
+            const queryParams = new URLSearchParams({
+                mode: mode,
+                level: selectedState.level,
+                grade: selectedState.grade,
+                semester: selectedState.semester,
+                chapter: selectedState.chapter,
+                type: qType,
+                revision: currentRevision,
+                limit: limit
+            });
+
+            const testUrl = `/exam?${queryParams.toString()}`;
+            
+            if (mode === 'print') {
+                window.open(testUrl, '_blank');
+            } else {
+                window.location.href = testUrl;
+            }
+        }
+
+        // Suggestion Board Feedback Modal
+        function openSuggestionModal() {
+            document.getElementById('suggestionModal').classList.add('active');
+        }
+
+        async function submitFeedback() {
+            const textarea = document.getElementById('feedbackText');
+            const content = textarea.value.trim();
+
+            if (!content) {
+                showToast('내용을 입력해 주세요.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: sessionUser.username,
+                        name: sessionUser.name,
+                        content: content
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    showToast(result.message, true);
+                    textarea.value = '';
+                    closeModal('suggestionModal');
+                } else {
+                    showToast(result.message || '등록에 실패했습니다.', false);
+                }
+            } catch (err) {
+                showToast('네트워크 오류가 발생했습니다.', false);
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Floating particles
+        function spawnMathParticles() {
+            const equations = [
+                'x + y = 3', 'f(x) = ax + b', 'π ≈ 3.14', '√x', '∑x_i', 'a² + b² = c²',
+                '1 + 1 = 2', 'E = mc²', 'y = mx + c', 'lim(x→∞)', 'θ', '∫f(x)dx', 'x² - 4 = 0'
+            ];
+            const overlay = document.getElementById('welcomeOverlay');
+            
+            for (let i = 0; i < 22; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'math-particle';
+                particle.textContent = equations[Math.floor(Math.random() * equations.length)];
+                
+                particle.style.left = `${Math.random() * 95}%`;
+                particle.style.animationDelay = `${Math.random() * 2}s`;
+                particle.style.animationDuration = `${3 + Math.random() * 3}s`;
+                particle.style.fontSize = `${1.2 + Math.random() * 1.5}rem`;
+                
+                overlay.appendChild(particle);
+            }
+        }
+
+        // Toast show logic
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastMessage.textContent = message;
+            toastIcon.textContent = isSuccess ? '💜' : '🔒';
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Log out
+        function logout() {
+            localStorage.removeItem('palUser');
+            window.location.href = '/login';
+        }
+
+        // Fetch User Streaks & Mascot Update
+        async function fetchUserStreak() {
+            try {
+                const url = `${FIREBASE_URL}/users/${sessionUser.username}/streak.json`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data) userStreak = data;
+                
+                updateStreakBadge();
+                updateMascotRago();
+            } catch (e) {
+                console.error("Streak load error:", e);
+            }
+        }
+
+        function updateStreakBadge() {
+            const streak = userStreak.currentStreak || 0;
+            document.getElementById('streakBadge').textContent = `🔥 ${streak}일 연속`;
+        }
+
+        function updateMascotRago() {
+            const streak = userStreak.currentStreak || 0;
+            const img = document.getElementById('ragoMascotImg');
+            const text = document.getElementById('ragoMascotText');
+
+            // Check sleeping state (10 PM to 6 AM)
+            const hour = new Date().getHours();
+            if (hour >= 22 || hour < 6) {
+                img.src = "/images/rago_sleeping.png";
+                text.innerHTML = `<strong>쿨쿨... 라고는 잠들었어요 😴</strong><br>밤이 늦었네요! 라고는 이미 단잠을 자는 중이랍니다. 오늘은 푹 쉬고 내일 활기차게 수학 정복을 이어가요!`;
+                return;
+            }
+
+            if (streak === 0) {
+                img.src = "/images/rago_angry.png";
+                text.innerHTML = `<strong>물개 라고가 공부를 기다려요! 😡</strong><br>연속 학습 일수가 0일입니다. 라고가 잔뜩 삐져 있어요! 단원을 선택해 개념 퀴즈를 맞추고 불꽃을 올려주세요!`;
+            } else if (streak < 5) {
+                img.src = "/images/rago_happy.png";
+                text.innerHTML = `<strong>라고와 함께 연속 ${streak}일째 학습 중! 😊</strong><br>아주 훌륭해요! 매일매일 라고와 만나요. 연속 5일 돌파 시 라고가 엄지척 칭찬을 해줄 거예요!`;
+            } else {
+                img.src = "/images/rago_thumbsup.png";
+                text.innerHTML = `<strong>라고의 특급 존경! 👍 (연속 ${streak}일 달성!)</strong><br>환상적인 열정입니다! 라고가 당신의 지치지 않는 학습 본능에 경의를 표하며 엄지를 척 세웁니다!`;
+            }
+        }
+
+        // Render Streak Calendar inside Modal
+        function showStreakCalendar() {
+            const modal = document.getElementById('streakCalendarModal');
+            const wrapper = document.getElementById('calendarWrapper');
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            
+            const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            
+            let gridHtml = `
+                <div class="calendar-month-title">${year}년 ${monthNames[month]}</div>
+                <div class="calendar-grid">
+                    <div class="calendar-header-day">일</div>
+                    <div class="calendar-header-day">월</div>
+                    <div class="calendar-header-day">화</div>
+                    <div class="calendar-header-day">수</div>
+                    <div class="calendar-header-day">목</div>
+                    <div class="calendar-header-day">금</div>
+                    <div class="calendar-header-day">토</div>
+            `;
+            
+            for (let i = 0; i < firstDay; i++) {
+                gridHtml += `<div class="calendar-day empty"></div>`;
+            }
+            
+            const history = userStreak.history || {};
+            for (let day = 1; day <= totalDays; day++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isActive = history[dateKey] === true;
+                const activeClass = isActive ? 'active-day' : '';
+                
+                gridHtml += `<div class="calendar-day ${activeClass}">${day}</div>`;
+            }
+            
+            gridHtml += `</div>`;
+            wrapper.innerHTML = gridHtml;
+            modal.classList.add('active');
+        }
+
+        // Tab Switcher between study home and my exams
+        function switchNavTab(tab) {
+            const studyBtn = document.getElementById('navStudyHome');
+            const examsBtn = document.getElementById('navMyExams');
+            const studyContent = document.getElementById('studyHomeContainer');
+            const examsContent = document.getElementById('myExamsContainer');
+
+            if (tab === 'study') {
+                studyBtn.style.color = 'var(--color-primary)';
+                studyBtn.style.borderBottomColor = 'var(--color-primary)';
+                examsBtn.style.color = 'var(--color-text-muted)';
+                examsBtn.style.borderBottomColor = 'transparent';
+
+                studyContent.style.display = 'block';
+                examsContent.style.display = 'none';
+            } else {
+                examsBtn.style.color = 'var(--color-primary)';
+                examsBtn.style.borderBottomColor = 'var(--color-primary)';
+                studyBtn.style.color = 'var(--color-text-muted)';
+                studyBtn.style.borderBottomColor = 'transparent';
+
+                studyContent.style.display = 'none';
+                examsContent.style.display = 'block';
+                loadMyExamsList();
+            }
+        }
+
+        // Custom exams modal popup & dynamic loading
+        function openCreateExamModal() {
+            document.getElementById('createExamModal').classList.add('active');
+            updateExamModalGrades();
+        }
+
+        function updateExamModalGrades() {
+            const level = document.getElementById('examLevelSelect').value;
+            const gradeSelect = document.getElementById('examGradeSelect');
+            const val = gradeSelect.value;
+            gradeSelect.innerHTML = '';
+
+            const maxGrade = level === 'elementary' ? 6 : 3;
+            for (let i = 1; i <= maxGrade; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i}학년`;
+                gradeSelect.appendChild(opt);
+            }
+            if (parseInt(val) <= maxGrade) {
+                gradeSelect.value = val;
+            }
+            updateExamModalChapters();
+        }
+
+        function updateExamModalChapters() {
+            const level = document.getElementById('examLevelSelect').value;
+            const grade = document.getElementById('examGradeSelect').value;
+            const semester = document.getElementById('examSemesterSelect').value;
+            const revision = document.getElementById('examRevisionSelect').value;
+
+            const chapterSelect = document.getElementById('examChapterSelect');
+            chapterSelect.innerHTML = '';
+
+            let chapters = [];
+            if (level === 'high') {
+                const highData = revision === '2022' ? HIGH_SCHOOL_2022 : HIGH_SCHOOL_2015;
+                chapters = highData[grade] ? (highData[grade][semester] || []) : [];
+            } else if (level === 'middle') {
+                const middleData = revision === '2022' ? MIDDLE_SCHOOL_2022 : MIDDLE_SCHOOL_2015;
+                chapters = middleData[grade] ? (middleData[grade][semester] || []) : [];
+            } else {
+                chapters = MATH_CURRICULUM.elementary.chapters[grade] ? (MATH_CURRICULUM.elementary.chapters[grade][semester] || []) : [];
+            }
+
+            chapters.forEach(ch => {
+                const opt = document.createElement('option');
+                opt.value = ch;
+                opt.textContent = ch;
+                chapterSelect.appendChild(opt);
+            });
+        }
+
+        let myCustomExams = {};
+
+        async function loadMyExamsList() {
+            const list = document.getElementById('myExamsList');
+            list.innerHTML = '<div style="color:var(--color-text-muted); text-align:center; padding:3rem;">시험지 목록을 로딩 중...</div>';
+            
+            try {
+                const url = `${FIREBASE_URL}/users/${sessionUser.username}/custom_exams.json`;
+                const res = await fetch(url);
+                myCustomExams = await res.json() || {};
+                
+                list.innerHTML = '';
+                const keys = Object.keys(myCustomExams);
+                if (keys.length === 0) {
+                    list.innerHTML = `
+                        <div style="background:#fff; border:1px solid rgba(138, 75, 235, 0.1); border-radius:15px; padding:4rem 2rem; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.02);">
+                            <span style="font-size:3rem; display:block; margin-bottom:1rem;">📝</span>
+                            <h3 style="color:#3b1e70; margin-bottom:0.5rem;">등록된 시험지가 없습니다</h3>
+                            <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1.5rem;">우측 상단의 '새 시험지 만들기' 버튼을 눌러 나만의 맞춤 수학 평가를 설계해 보세요!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort keys by createdAt descending
+                keys.sort((a, b) => {
+                    const tA = myCustomExams[a].createdAt || '';
+                    const tB = myCustomExams[b].createdAt || '';
+                    return tB.localeCompare(tA);
+                });
+
+                keys.forEach(key => {
+                    const exam = myCustomExams[key];
+                    const card = document.createElement('div');
+                    card.className = 'exam-card';
+                    card.style.cssText = "background:#fff; border:1px solid rgba(138, 75, 235, 0.1); border-radius:15px; padding:1.25rem; margin-bottom:1rem; box-shadow:0 4px 15px rgba(0,0,0,0.02); display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;";
+                    
+                    const isSystem = exam.createdType === 'system';
+                    const statusText = exam.status === 'completed' 
+                        ? `<span style="font-weight:800; font-size:0.95rem; color:var(--color-success);">${exam.score}점 (완료)</span>` 
+                        : `<span style="font-weight:800; font-size:0.95rem; color:#db2777;">응시 전</span>`;
+
+                    const deleteBtn = isSystem 
+                        ? `<button disabled style="margin-top:0; padding:0.4rem 0.8rem; font-size:0.8rem; border-color:#ccc; color:#aaa; background:none; cursor:not-allowed; border-radius:6px; font-weight:bold; border:1px solid #ddd;" title="시스템 시험지는 삭제할 수 없습니다.">삭제 불가</button>`
+                        : `<button style="margin-top:0; padding:0.4rem 0.8rem; font-size:0.8rem; border-color:#ef4444; color:#ef4444; background:none; cursor:pointer; border-radius:6px; font-weight:bold; border:1px solid #ef4444;" onclick="deleteCustomExam('${key}')">삭제</button>`;
+
+                    const actionBtn = exam.status === 'completed'
+                        ? `<button class="btn-primary" style="margin-top:0; padding:0.4rem 0.8rem; font-size:0.8rem; background:linear-gradient(135deg, #7c3aed, #a855f7);" onclick="takeCustomExam('${key}')">다시 풀기</button>`
+                        : `<button class="btn-primary" style="margin-top:0; padding:0.4rem 0.8rem; font-size:0.8rem; background:linear-gradient(135deg, #7c3aed, #a855f7);" onclick="takeCustomExam('${key}')">응시하기</button>`;
+
+                    const createdLabel = isSystem ? "시스템 자동" : "직접 출제";
+                    const limitLabel = exam.timeLimit === 'none' ? '제한시간 없음' : `${exam.timeLimit}분`;
+
+                    card.innerHTML = `
+                        <div>
+                            <div style="font-size:1.05rem; font-weight:800; color:#3b1e70; margin-bottom:0.25rem;">${exam.title}</div>
+                            <div style="font-size:0.85rem; color:#7c3aed; font-weight:700; margin-bottom:0.4rem;">${exam.level === 'elementary' ? '초등' : exam.level === 'middle' ? '중등' : '고등'} ${exam.grade}학년 ${exam.semester}학기 - [${exam.chapter}] (${exam.revision} 개정)</div>
+                            <div style="font-size:0.8rem; color:var(--color-text-muted);">문항 수: ${exam.questionCount}문항 | 제한시간: ${limitLabel} | 난이도: ${exam.difficulty} | 생성: ${createdLabel}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            ${statusText}
+                            ${actionBtn}
+                            ${deleteBtn}
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Error loading exams:", err);
+                list.innerHTML = '<div style="color:#ef4444; text-align:center; padding:3rem; font-weight:bold;">⚠️ 목록 로딩에 실패했습니다.</div>';
+            }
+        }
+
+        async function createCustomExam(e) {
+            if (e) e.preventDefault();
+            
+            const title = document.getElementById('examTitleInput').value.trim();
+            const level = document.getElementById('examLevelSelect').value;
+            const grade = document.getElementById('examGradeSelect').value;
+            const semester = document.getElementById('examSemesterSelect').value;
+            const chapter = document.getElementById('examChapterSelect').value;
+            const revision = document.getElementById('examRevisionSelect').value;
+            const difficulty = document.getElementById('examDifficultySelect').value;
+            const questionCount = parseInt(document.getElementById('examQCountSelect').value);
+            const timeLimit = document.getElementById('examLimitSelect').value;
+
+            if (!title) {
+                showToast("시험지 제목을 입력해 주세요.", false);
+                return;
+            }
+
+            const payload = {
+                title: title,
+                level: level,
+                grade: grade,
+                semester: semester,
+                chapter: chapter,
+                revision: revision,
+                difficulty: difficulty,
+                questionCount: questionCount,
+                timeLimit: timeLimit,
+                createdType: 'self',
+                status: 'not_started',
+                score: 0,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const examId = 'exam_' + Date.now();
+                const url = `${FIREBASE_URL}/users/${sessionUser.username}/custom_exams/${examId}.json`;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    showToast("시험지가 정상적으로 생성되었습니다!", true);
+                    closeModal('createExamModal');
+                    loadMyExamsList();
+                    document.getElementById('customExamForm').reset();
+                } else {
+                    showToast("생성에 실패했습니다.", false);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("네트워크 통신 오류", false);
+            }
+        }
+
+        function takeCustomExam(key) {
+            const exam = myCustomExams[key];
+            const queryParams = new URLSearchParams({
+                mode: 'online',
+                customExamId: key,
+                level: exam.level,
+                grade: exam.grade,
+                semester: exam.semester,
+                chapter: exam.chapter,
+                revision: exam.revision,
+                limit: exam.timeLimit,
+                type: 'mixed',
+                qCount: exam.questionCount,
+                difficulty: exam.difficulty
+            });
+            window.location.href = `/exam?${queryParams.toString()}`;
+        }
+
+        async function deleteCustomExam(key) {
+            if (!confirm("이 시험지를 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)")) return;
+            
+            try {
+                const url = `${FIREBASE_URL}/users/${sessionUser.username}/custom_exams/${key}.json`;
+                const res = await fetch(url, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast("시험지가 정상적으로 삭제되었습니다.", true);
+                    loadMyExamsList();
+                } else {
+                    showToast("삭제 실패", false);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("통신 오류", false);
+            }
+        }
+
+        // Check for Leitner due repetitions
+        async function checkDueRepetitions() {
+            try {
+                const url = `${FIREBASE_URL}/users/${sessionUser.username}/study_progress.json`;
+                const res = await fetch(url);
+                const progress = await res.json();
+                
+                if (!progress) return;
+
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                dueReminders = [];
+
+                Object.keys(progress).forEach(key => {
+                    const progressItem = progress[key];
+                    progressItem.chapterKey = key;
+                    if (!progressItem.chapter) {
+                        progressItem.chapter = key.replace(/_/g, ' ');
+                    }
+                    // If studied and stage is not master and nextRepetition is defined
+                    if (progressItem.stage && progressItem.stage !== 'master' && progressItem.nextRepetition) {
+                        const nextRep = new Date(progressItem.nextRepetition);
+                        nextRep.setHours(0,0,0,0);
+                        
+                        if (nextRep <= today) {
+                            dueReminders.push(progressItem);
+                        }
+                    }
+                });
+
+                if (dueReminders.length > 0) {
+                    const firstDue = dueReminders[0];
+                    const msg = `${sessionUser.name}님, 오늘 [${firstDue.chapter}] ${firstDue.stage}단계 복습 어떠세요? ⏱️`;
+                    document.getElementById('reminderMessage').textContent = msg;
+                    document.getElementById('repetitionReminderModal').classList.add('active');
+                }
+            } catch (err) {
+                console.error("Error checking due repetitions:", err);
+            }
+        }
+
+        function goToReminderStudy() {
+            if (dueReminders.length === 0) return;
+            const item = dueReminders[0];
+            closeModal('repetitionReminderModal');
+            
+            const queryParams = new URLSearchParams({
+                level: item.level || 'middle',
+                grade: item.grade || 1,
+                semester: item.semester || 1,
+                chapter: item.chapter || item.chapterKey,
+                revision: item.revision || '2022'
+            });
+            window.location.href = `/study?${queryParams.toString()}`;
+        }
+
+        // Init
+        renderCurriculums();
+        fetchUserStreak();
+    </script>
+</body>
+</html>

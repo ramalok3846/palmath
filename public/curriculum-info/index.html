@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교육과정 적용시기 및 안내 | PaLMath</title>
+    <meta name="description" content="2022 개정 및 2015 개정 교육과정 수학 교과의 학년별 적용시기 및 변경사항 비교 페이지입니다.">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            justify-content: flex-start;
+            padding: 3rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            z-index: 10;
+        }
+
+        /* Back navigation */
+        .back-nav {
+            margin-bottom: 2rem;
+        }
+
+        .btn-back {
+            background: #ffffff;
+            border: 1px solid var(--border-glow);
+            color: var(--color-text);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            border-color: var(--border-glow-active);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+            transform: translateX(-3px);
+        }
+
+        /* Title Box */
+        .info-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .info-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-text) 50%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-subtitle {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Timeline and Content Cards */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            background: #ffffff;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            padding-bottom: 0.8rem;
+        }
+
+        .card-title-icon {
+            font-size: 1.4rem;
+        }
+
+        /* Timeline Graphic style */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px dashed rgba(168, 85, 247, 0.3);
+            margin-left: 0.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: calc(-2rem - 6px);
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: hsl(270, 95%, 70%);
+            box-shadow: 0 0 10px hsl(270, 95%, 70%);
+            border: 2px solid var(--bg-primary);
+        }
+
+        .timeline-year {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            line-height: 1.4;
+        }
+
+        .timeline-highlight {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        /* Table inside card */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .compare-table th {
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--color-text);
+            padding: 0.6rem;
+            font-weight: 600;
+            border: 1px solid var(--border-glow);
+            text-align: center;
+        }
+
+        .compare-table td {
+            padding: 0.8rem;
+            border: 1px solid rgba(128, 90, 213, 0.15);
+            color: var(--color-text);
+        }
+
+        .compare-table tr:hover td {
+            background: rgba(138, 75, 235, 0.05);
+        }
+
+        .subject-tag {
+            display: inline-block;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--color-text);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            margin: 0.15rem;
+        }
+
+        .badge-new {
+            background: rgba(236, 72, 153, 0.2);
+            color: #db2777;
+            border: 1px solid rgba(236, 72, 153, 0.4);
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="floating-particle particle-1"></div>
+    <div class="floating-particle particle-2"></div>
+
+    <div class="container">
+        <!-- Back Navigation Button -->
+        <div class="back-nav">
+            <a href="/home" class="btn-back">← 메인 대시보드로 돌아가기</a>
+        </div>
+
+        <!-- Header Info -->
+        <div class="info-header">
+            <h1 class="info-title">수학 교육과정 안내</h1>
+            <p class="info-subtitle">2022 개정 및 2015 개정 수학 교육과정의 학년별 적용 시기와 과목 변화 비교표입니다.</p>
+        </div>
+
+
+
+        <div class="grid-layout">
+            <!-- Left Card: Timeline -->
+            <div class="info-card">
+                <h3 class="card-title">
+                    <span class="card-title-icon">📅</span> 학년별 개정 교육과정 적용 시기
+                </h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-year">2024년</div>
+                        <div class="timeline-desc">
+                            <span class="timeline-highlight">초등학교 1~2학년</span>에 2022 개정 교육과정이 최초 적용되었습니다.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-year">2025년</div>
+                        <div class="timeline-desc">
+                            <span class="timeline-highlight">초3~4학년, 중학교 1학년, 고등학교 1학년</span>에 적용이 확대되었습니다. (고1 공통수학 행렬 단원 부활)
+                        </div>
+                    </div>
+                    <div class="timeline-item text-glow">
+                        <div class="timeline-marker" style="background: #db2777; box-shadow: 0 0 10px rgba(219, 39, 119, 0.4);"></div>
+                        <div class="timeline-year" style="color: #db2777;">2026년 (현재)</div>
+                        <div class="timeline-desc">
+                            <span class="timeline-highlight" style="color: var(--color-text); font-weight: 700;">초5~6학년, 중학교 2학년, 고등학교 2학년</span>에 개정 교육과정이 새로 도입되어 적용 중입니다.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-year">2027년</div>
+                        <div class="timeline-desc">
+                            <span class="timeline-highlight">중학교 3학년, 고등학교 3학년</span>까지 순차적으로 2022 개정 교육과정이 100% 전면 적용 완료됩니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Card: Compare Curriculum -->
+            <div class="info-card">
+                <h3 class="card-title">
+                    <span class="card-title-icon">📚</span> 교육과정별 고교 수학 체계 비교
+                </h3>
+                <p class="timeline-desc" style="margin-bottom: 1.2rem;">
+                    2022 개정 교육과정에서는 고등학교 수학 교과목의 이름이 재편되었고, 기존 15개정 대비 내용 순서 조정 및 신설이 이루어졌습니다.
+                </p>
+
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">구분</th>
+                            <th style="width: 37.5%;">2015 개정</th>
+                            <th style="width: 37.5%;">2022 개정</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600; text-align: center;">고1 공통</td>
+                            <td>
+                                <span class="subject-tag">수학 (상)</span>
+                                <span class="subject-tag">수학 (하)</span>
+                            </td>
+                            <td>
+                                <span class="subject-tag">공통수학 1</span>
+                                <span class="subject-tag">공통수학 2</span>
+                                <span class="subject-tag badge-new">행렬 단원 부활</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600; text-align: center;">고2~3 일반선택</td>
+                            <td>
+                                <span class="subject-tag">수학 Ⅰ</span>
+                                <span class="subject-tag">수학 Ⅱ</span>
+                                <span class="subject-tag">확률과 통계</span>
+                                <span class="subject-tag">미적분</span>
+                            </td>
+                            <td>
+                                <span class="subject-tag">대수</span>
+                                <span class="subject-tag">미적분 Ⅰ</span>
+                                <span class="subject-tag">확률과 통계</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600; text-align: center;">진로선택 및 기하</td>
+                            <td>
+                                <span class="subject-tag">기하</span>
+                                <span class="subject-tag">실용수학</span>
+                                <span class="subject-tag">경제수학</span>
+                            </td>
+                            <td>
+                                <span class="subject-tag">미적분 Ⅱ</span>
+                                <span class="subject-tag">기하</span>
+                                <span class="subject-tag">경제수학</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- New Comprehensive comparison card -->
+        <div class="info-card" style="margin-top: 2rem; margin-bottom: 5rem;">
+            <h3 class="card-title">
+                <span class="card-title-icon">📊</span> 초·중·고 수학 교육과정 주요 개정 비교
+            </h3>
+            <table class="compare-table" style="font-size: 0.9rem; line-height: 1.5;">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">학교급</th>
+                        <th style="width: 42.5%;">2015 개정 교육과정</th>
+                        <th style="width: 42.5%;">2022 개정 교육과정 (주요 변화)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 700; text-align: center; background: rgba(138, 75, 235, 0.05);">초등학교</td>
+                        <td>
+                            • <b>5개 영역</b> 체계<br>
+                            &nbsp;&nbsp;(수와 연산, 도형, 측정, 규칙성, 자료와 가능성)<br>
+                            • 개념 나열 위주 전개
+                        </td>
+                        <td>
+                            • <b>4개 영역</b>으로 통폐합 및 재구성<br>
+                            &nbsp;&nbsp;(수와 연산, <b>도형과 측정</b>, <b>변화와 관계</b>, 자료와 가능성)<br>
+                            • 실생활 연계 수학 및 코딩 수리 기초 강화
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; text-align: center; background: rgba(138, 75, 235, 0.05);">중학교</td>
+                        <td>
+                            • <b>5개 영역</b> 체계<br>
+                            &nbsp;&nbsp;(수와 연산, 문자와 식, 함수, 기하, 확률과 통계)<br>
+                            • 대푯값 중 '상자그림' 없음
+                        </td>
+                        <td>
+                            • <b>4개 영역</b>으로 통폐합 및 재구성<br>
+                            &nbsp;&nbsp;(수와 연산, <b>도형과 측정</b>, <b>변화와 관계</b>, 자료와 가능성)<br>
+                            • 3학년 과정에 <b>'상자그림과 산점도'</b> 신규 도입<br>
+                            • 공학 도구(지오지브라 등) 연계 강화
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; text-align: center; background: rgba(138, 75, 235, 0.05);">고등학교</td>
+                        <td>
+                            • 1학년 공통: <b>수학 (상), 수학 (하)</b><br>
+                            • 2~3학년 일반선택: 수학Ⅰ, 수학Ⅱ, 미적분, 확률과 통계<br>
+                            • 2~3학년 진로선택: 기하, 실용수학, 경제수학 등
+                        </td>
+                        <td>
+                            • 1학년 공통: <b>공통수학1, 공통수학2</b> (<b>'행렬'</b> 단원 신설 부활)<br>
+                            • 2~3학년 일반선택: <b>대수</b>(수학Ⅰ 개칭), <b>미적분Ⅰ</b>(수학Ⅱ 개칭), 확률과 통계<br>
+                            • 2~3학년 진로선택: <b>미적분Ⅱ</b>(미적분 개칭), <b>기하</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
